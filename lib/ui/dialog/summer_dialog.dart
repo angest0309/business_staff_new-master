@@ -180,6 +180,7 @@ class SummerState extends State<SummerWidget> {
                       ),
                       onTap: () {
                         //添加附件弹窗
+                        //addFile();
                       },
                     ),
                   ],
@@ -234,7 +235,7 @@ class SummerState extends State<SummerWidget> {
                           style: TextStyle(fontSize: 18.0),
                         ),
                         Container(
-                          height: 150.0,
+                          height: 170.0,
                           // child:ListView(
                           //   scrollDirection: Axis.vertical,
                           //   itemExtent: 40,
@@ -252,7 +253,7 @@ class SummerState extends State<SummerWidget> {
                                 //return buildListData(context, titleItems[item], iconItems[item]);
                                 return buildListData(context, fileLists[item]);
                               },
-                              separatorBuilder: (BuildContext context,int index)=>new Divider(),
+                              separatorBuilder: (BuildContext context,int index)=>new Divider(height: 5.0,color: Colors.black,),
                               itemCount: fileLists.length,
                           ),
                         ),
@@ -304,7 +305,8 @@ class SummerState extends State<SummerWidget> {
     String title = fileItem.title;
     String type = fileItem.type;
     return new ListTile(
-      title: new Text( number +'                  '+title +'                  '+type),
+      contentPadding: EdgeInsets.all(0.0),
+      title: new Text('       ' + number +'                '+title +'                  '+'.'+ type),
     );
   }
 
@@ -353,6 +355,8 @@ class SummerState extends State<SummerWidget> {
   _apply() async {
     await _handleSummer();
   }
+
+
 
   void showAlertDialog() {
     showDialog<Null>(
@@ -425,5 +429,8 @@ List<fileEntity> fileLists = <fileEntity>[
   new fileEntity( '5' ,'word5','doc'),
   new fileEntity( '6' ,'word6','doc'),
   new fileEntity( '7' ,'word7','doc'),
+  new fileEntity( '8' ,'word8','doc'),
+  new fileEntity( '9' ,'word9','doc'),
+  new fileEntity( '10' ,'word10','doc'),
 ];
 

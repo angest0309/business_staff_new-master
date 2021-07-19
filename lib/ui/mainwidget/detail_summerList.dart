@@ -30,6 +30,7 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
       Provider.of<UserStateModel>(context, listen: false);
       SummerEntity summerEntity = widget.summerEntity;
       int applicationId = summerEntity.applicationId;
+      int userId = widget.userId;
 
 
       return WillPopScope(//返回拦截组件
@@ -106,7 +107,7 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
                               child: Text('撤销',style: Theme.of(context).textTheme.button,),
                               color: Color(0xFF087f23),
                               onPressed: (){//是否修改弹窗
-                                showCancelAlertDialog(summerEntity, state, applicationId);
+                                showCancelAlertDialog(summerEntity, state, applicationId ,userId);
                               }
                           ),
                           Container(
@@ -155,70 +156,82 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
   }
 
   //撤销弹窗
-  void showCancelAlertDialog(SummerEntity summerEntity, UserStateModel state, int applicationId) {
-    showDialog<Null>(
-        context: context,
-        barrierDismissible: true,//点击dialog外区域是否可以关闭dialog
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text('撤销总结',style: TextStyle(color: Colors.green,fontSize: 20),),
-            //可滑动
-            content: new SingleChildScrollView(
-                child: Text("是否确定撤销总结？",style: TextStyle(fontSize: 15),)
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('取消',style: TextStyle(color: Colors.grey),),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+  // void showCancelAlertDialog(int ApplicationId, int userId) {
+  void showCancelAlertDialog(SummerEntity summerEntity, UserStateModel state, int applicationId , int userId) {
+      showDialog<Null>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text('撤销申请',style: TextStyle(color: Colors.green,fontSize: 20),),
+              //可滑动
+              content: new SingleChildScrollView(
+                  child: Text("是否确定撤销申请？",style: TextStyle(fontSize: 15),)
               ),
-              new FlatButton(
-                child: new Text('确定',style: TextStyle(color: Colors.green),),
-                onPressed: () {
-                  //撤销总结
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text('取消',style: TextStyle(color: Colors.grey),),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                new FlatButton(
+                  child: new Text('确定',style: TextStyle(color: Colors.green),),
+                  onPressed: () {
+                    //   Abolish().doAbolish(applicationId, userId).then((value) {
+                    //   print(value.toString());
+                    //   //v.init(widget.userId);
+                    //   BotToast.showText(text:"撤销成功！");
+                    //   Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => MainPage()));
+                    //   // Navigator.of(context).pop("刷新页面");
+                    // }).catchError((error) {
+                    //   print(error.toString());
+                    //   BotToast.showText(text:"撤销失败，请检查网络！");
+                    // });
+                  },
+                ),
+              ],
+            );
+          });
+    }
 
-                  //Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
-  }
 
-  //修改弹窗
-  void showChangeAlertDialog(SummerEntity summerEntity, UserStateModel state, int applicationId) {
-    showDialog<Null>(
-        context: context,
-        barrierDismissible: true,//点击dialog外区域是否可以关闭dialog
-        builder: (BuildContext context) {
-          return new AlertDialog(
-            title: new Text('修改总结',style: TextStyle(color: Colors.green,fontSize: 20),),
-            //可滑动
-            content: new SingleChildScrollView(
-                child: Text("是否确定修改总结？",style: TextStyle(fontSize: 15),)
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('取消',style: TextStyle(color: Colors.grey),),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+    //修改弹窗
+    void showChangeAlertDialog(SummerEntity summerEntity, UserStateModel state, int applicationId) {
+      showDialog<Null>(
+          context: context,
+          barrierDismissible: true,//点击dialog外区域是否可以关闭dialog
+          builder: (BuildContext context) {
+            return new AlertDialog(
+              title: new Text('修改总结',style: TextStyle(color: Colors.green,fontSize: 20),),
+              //可滑动
+              content: new SingleChildScrollView(
+                  child: Text("是否确定修改总结？",style: TextStyle(fontSize: 15),)
               ),
-              new FlatButton(
-                child: new Text('确定',style: TextStyle(color: Colors.green),),
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SummerPage(summerEntity, state, applicationId)
-                      )
-                  );
-                  //Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        });
+              actions: <Widget>[
+                new FlatButton(
+                  child: new Text('取消',style: TextStyle(color: Colors.grey),),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                new FlatButton(
+                  child: new Text('确定',style: TextStyle(color: Colors.green),),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SummerPage(summerEntity, state, applicationId)
+                        )
+                    );
+                    //Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
   }
 }

@@ -132,7 +132,7 @@ class _DetailBusinessPageState extends State<DetailBusinessPage> {
       );
     },);
   }
-
+//撤销申请
   void showAlertDialog(int ApplicationId, int userId) {
     showDialog<Null>(
         context: context,

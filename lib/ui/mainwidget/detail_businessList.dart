@@ -84,7 +84,8 @@ class _DetailBusinessPageState extends State<DetailBusinessPage> {
                             children: [
                               info(Icons.person, "申请人", widget.applyRepoEntity.applicant),
                               info(Icons.star, "出差原因", widget.applyRepoEntity.reason),
-                              info(Icons.person, "随行人员", widget.applyRepoEntity.accompany),
+                              // info(Icons.person, "随行人员", widget.applyRepoEntity.accompany),
+                              detailinfo(Icons.person, "随行人员", widget.applyRepoEntity.accompany),
                               info(Icons.attach_money, "经费来源", widget.applyRepoEntity.fundsFrom),
                               info(Icons.timer, "出发时间", "${startsp[0]}年${startsp[1]}月${startsp[2]}日"),
                               info(Icons.timer, "结束时间", "${endsp[0]}年${endsp[1]}月${endsp[2]}日"),
@@ -172,6 +173,60 @@ class _DetailBusinessPageState extends State<DetailBusinessPage> {
             ],
           );
         });
+  }
+
+  void showAccompanyDialog(String info){
+    showDialog<Null>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+            title: new Text('随行人员',style: TextStyle(color: Colors.green,fontSize: 20),),
+            //可滑动
+            content: new SingleChildScrollView(
+                child: Text(info,style: TextStyle(fontSize: 15),)
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text('确定',style: TextStyle(color: Colors.grey),),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  Widget detailinfo(IconData iconData,String title,String info){
+    return InkWell(
+        onTap:()=> showAccompanyDialog(info),
+        child:Container(
+          padding: EdgeInsets.all(10.0),
+          height: title=="随行人员"?70.0:50.0,
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  //Container(width: 10.0,),
+                  Container(width: 20.0,child: Icon(iconData,color: Colors.grey,size: 20,),),
+                  Container(width: 10.0,),
+                  Container(
+                    child: Text('${title}',style: TextStyle(fontSize: 18),),
+                  ),
+                ],
+              ),
+              Container(
+                  width: 230.0,
+                  alignment: Alignment.centerRight,
+                  child:AutoSizeText("${info} ",style: TextStyle(color: Colors.grey,fontSize: 18),maxLines: 2,)
+              )
+            ],
+          ),
+        )
+    );
   }
 
   Widget info(IconData iconData,String title,String info){

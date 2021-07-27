@@ -22,9 +22,11 @@ class API {
   static const PDF = "export/getApplicationPdf";//获取出差申请Pdf表
   static const SUMMER = 'summer/addOrUpdateSummer';//创建或修改新的出差总结
   static const GET_ONESUMMER = 'summer/checkOneSummer';//查看某个特定的出差总结
-  static const DEL_SUMMER = 'summer/deleteFile';//删除某个出差文件
+  static const DEL_SUMMER_FILE = 'summer/deleteFile';//删除某个出差总结文件
   static const GET_SUMMERLIST = 'summer/selectSummers';//获取个人的所有的出差总结
-  static const UPLOAD_SUMMER = 'summer/uploadFile';//上传某个出差文件
+  static const UPLOAD_SUMMER_FILE = 'summer/uploadFile';//上传某个出差文件
+  static const DEL_SUMMER = 'summer/cancelSummary';//删除某个出差总结
 
   static const GET_APPLICATION = 'applyCheck/getOpenApplication';
 }
+    

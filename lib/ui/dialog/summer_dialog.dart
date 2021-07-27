@@ -2,13 +2,21 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_document_picker/flutter_document_picker.dart';
+import 'package:flutterfileselector/flutterfileselector.dart';
+import 'package:flutterfileselector/model/drop_down_model.dart';
 import 'package:registration_staff/config/const.dart';
 import 'package:registration_staff/data/summer_repo.dart';
 import 'package:registration_staff/dataobj/file_entity.dart';
 import 'package:registration_staff/dataobj/summer_entity.dart';
 import 'package:registration_staff/states/user_state_model.dart';
+import 'package:registration_staff/widget/File_picker.dart';
 import 'package:registration_staff/widget/area_spinner.dart';
 import 'package:registration_staff/widget/auto_resize_widget.dart';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_document_picker/flutter_document_picker.dart';
 
 import '../mainpage.dart';
 
@@ -18,6 +26,7 @@ class SummerPage extends StatelessWidget {
   UserStateModel state;
   int applicationId;
   SummerPage(this.summerEntity, this.state, this.applicationId);
+
 
   //文件列表
 
@@ -48,11 +57,32 @@ class SummerState extends State<SummerWidget> {
   SummerState(this.state, this.applicationId);
   var _value;
 
+
+  //添加附件
+  String _path = '-';
+  bool _pickFileInProgress = false;
+  bool _iosPublicDataUTI = true;
+  bool _checkByCustomExtension = false;
+  bool _checkByMimeType = false;
+
+  final _utiController = TextEditingController(
+    text: 'com.sidlatau.example.mwfbak',
+  );
+
+  final _extensionController = TextEditingController(
+    text: 'mwfbak',
+  );
+
+  final _mimeTypeController = TextEditingController(
+    text: 'application/pdf image/png',
+  );
+
   SummerEntity summerEntity = new SummerEntity(
     applicationId: 0,
     title: '',
     text: '',
   );
+  List<String> fileTypeEnd = [".pdf", ".doc", ".docx",".xls",".xlsx"];
 
   TextEditingController _titleController = TextEditingController();
   TextEditingController _textController = TextEditingController();
@@ -77,6 +107,115 @@ class SummerState extends State<SummerWidget> {
             width: 70,
             height: 50,
           )),
+    );
+  }
+
+  //文件管理
+  _pickDocument() async {
+    String result;
+    try {
+      setState(() {
+        _path = '-';
+        _pickFileInProgress = true;
+        print(_path);
+      });
+
+      FlutterDocumentPickerParams params = FlutterDocumentPickerParams(
+        allowedFileExtensions: _checkByCustomExtension
+            ? _extensionController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList()
+            : null,
+        allowedUtiTypes: _iosPublicDataUTI
+            ? null
+            : _utiController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList(),
+        allowedMimeTypes: _checkByMimeType
+            ? _mimeTypeController.text
+            .split(' ')
+            .where((x) => x.isNotEmpty)
+            .toList()
+            : null,
+      );
+
+      result = await FlutterDocumentPicker.openDocument(params: params);
+    } catch (e) {
+      print(e);
+      result = 'Error: $e';
+    } finally {
+      setState(() {
+        _pickFileInProgress = false;
+      });
+    }
+
+    setState(() {
+      _path = result;
+    });
+  }
+
+  _buildIOSParams() {
+    return ParamsCard(
+      title: 'iOS Params',
+      children: <Widget>[
+        Text(
+          'Example app is configured to pick custom document type with extension ".mwfbak"',
+          style: Theme.of(context).textTheme.bodyText2,
+        ),
+        Param(
+          isEnabled: !_iosPublicDataUTI,
+          description:
+          'Allow pick all documents("public.data" UTI will be used).',
+          controller: _utiController,
+          onEnabledChanged: (value) {
+            setState(() {
+              _iosPublicDataUTI = value;
+            });
+          },
+          textLabel: 'Uniform Type Identifier to pick:',
+        ),
+      ],
+    );
+  }
+
+  _buildAndroidParams() {
+    return ParamsCard(
+      title: 'Android Params',
+      children: <Widget>[
+        Param(
+          isEnabled: _checkByMimeType,
+          description: 'Filter files by MIME type',
+          controller: _mimeTypeController,
+          onEnabledChanged: (value) {
+            setState(() {
+              _checkByMimeType = value;
+            });
+          },
+          textLabel: 'Allowed MIME types (separated by space):',
+        ),
+      ],
+    );
+  }
+
+  _buildCommonParams() {
+    return ParamsCard(
+      title: 'Common Params',
+      children: <Widget>[
+        Param(
+          isEnabled: _checkByCustomExtension,
+          description:
+          'Check file by extension - if picked file does not have wantent extension - return "extension_mismatch" error',
+          controller: _extensionController,
+          onEnabledChanged: (value) {
+            setState(() {
+              _checkByCustomExtension = value;
+            });
+          },
+          textLabel: 'File extensions (separated by space):',
+        ),
+      ],
     );
   }
 
@@ -152,38 +291,57 @@ class SummerState extends State<SummerWidget> {
                   height: 5,
                   color: Colors.black,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Icon(
-                      Icons.format_list_numbered,
-                      color: Colors.grey,
-                    ),
-                    SizedBox(
-                      width: 30,
-                    ),
-                    Text(
-                      '出差总结附件',
-                      style: TEXT_STYLE_LABEL,
-                    ),
-                    SizedBox(
-                      width: 80,
-                    ),
-                    InkWell(
-                      child: Text(
-                        "添加附件",
-                        style: TextStyle(color: Colors.red,fontSize: 18.0),
-                      ),
-                      onTap: () {
-                        //添加附件弹窗
-                      },
-                    ),
-                  ],
-                ),
+                // Row(
+                //   mainAxisSize: MainAxisSize.max,
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: <Widget>[
+                //     SizedBox(
+                //       width: 5,
+                //     ),
+                //     Icon(
+                //       Icons.format_list_numbered,
+                //       color: Colors.grey,
+                //     ),
+                //     SizedBox(
+                //       width: 30,
+                //     ),
+                //     Text(
+                //       '出差总结附件',
+                //       style: TEXT_STYLE_LABEL,
+                //     ),
+                //     SizedBox(
+                //       width: 80,
+                //     ),
+                //     FlatButton(
+                //       onPressed: _pickFileInProgress ? null : _pickDocument,
+                //       child: Row(
+                //         children: [
+                //           Text('添加附件',style: TextStyle(
+                //                        color: Colors.red,
+                //                        fontSize: 20,),),
+                //           SizedBox(width: 5,),
+                //           Icon(Icons.open_in_new,color: Colors.red,),
+                //         ],
+                //       ),
+                //     ),
+                //     // Row(
+                //     //   mainAxisSize: MainAxisSize.max,
+                //     //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     //   children: <Widget>[
+                //     //     Text('添加附件',
+                //     //         style: TextStyle(
+                //     //           color: Colors.grey,
+                //     //           fontSize: 20,
+                //     //         )),
+                //     //     IconButton(
+                //     //       icon: Icon(Icons.open_in_new),
+                //     //       color: Colors.red,
+                //     //       onPressed: _pickFileInProgress ? null : _pickDocument,
+                //     //     )
+                //     //   ],
+                //     // ),
+                //   ],
+                // ),
 //                Divider(),
 //                Container(
 //                    child: Row(children: [
@@ -224,44 +382,45 @@ class SummerState extends State<SummerWidget> {
 //                    ),
 //                  ]),
 //                ),
-                SizedBox(height: 10,),
-                Expanded(
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Text(
-                            '序号          附件标题         附件类型          操作  ',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        Container(
-                          height: 150.0,
-                          // child:ListView(
-                          //   scrollDirection: Axis.vertical,
-                          //   itemExtent: 40,
-                          //   children: [
-                          //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word1'),),
-                          //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word2'),),
-                          //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word3'),),
-                          //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word4'),),
-                          //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word5'),),
-                          //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word6'),),
-                          //   ],
-                          // ),
-                          child: new ListView.separated(
-                              itemBuilder:(context,item){
-                                //return buildListData(context, titleItems[item], iconItems[item]);
-                                return buildListData(context, fileLists[item]);
-                              },
-                              separatorBuilder: (BuildContext context,int index)=>new Divider(),
-                              itemCount: fileLists.length,
-                          ),
-                        ),
-
-                      ],
-                    ),
-                  ),
-                ),
-                // SizedBox(height: 10.0),
+//                 Text('文件路径为'+'$_path'),
+//                 SizedBox(height: 10,),
+//                 Expanded(
+//                   child: Container(
+//                     child: Column(
+//                       children: [
+//                         Text(
+//                             '序号          附件标题         附件类型          操作  ',
+//                           style: TextStyle(fontSize: 18.0),
+//                         ),
+//                         Container(
+//                           height: 150.0,
+//                           // child:ListView(
+//                           //   scrollDirection: Axis.vertical,
+//                           //   itemExtent: 40,
+//                           //   children: [
+//                           //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word1'),),
+//                           //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word2'),),
+//                           //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word3'),),
+//                           //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word4'),),
+//                           //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word5'),),
+//                           //     ListTile(leading: Icon(Icons.insert_drive_file),title: Text('word6'),),
+//                           //   ],
+//                           // ),
+//                           child: new ListView.separated(
+//                               itemBuilder:(context,item){
+//                                 //return buildListData(context, titleItems[item], iconItems[item]);
+//                                 return buildListData(context, fileLists[item]);
+//                               },
+//                               separatorBuilder: (BuildContext context,int index)=>new Divider(),
+//                               itemCount: fileLists.length,
+//                           ),
+//                         ),
+//
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+                SizedBox(height: 10.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -321,13 +480,7 @@ class SummerState extends State<SummerWidget> {
   //   );
   // }
 
-  //撤销总结
-  _cancelSummer() async{
 
-  }
-  _cancel() async {
-    _cancelSummer();
-  }
 
   //提交总结，参考制造撤销
   _handleSummer() async {
@@ -396,27 +549,6 @@ class SummerState extends State<SummerWidget> {
 }
 
 //文件列表数据源
-// 数据源
-List<String> titleItems = <String>[
-  'keyboard', 'print',
-  'router', 'pages',
-  'zoom_out_map', 'zoom_out',
-  'youtube_searched_for', 'wifi_tethering',
-  'wifi_lock', 'widgets',
-  'weekend', 'web',
-  '图accessible', 'ac_unit',
-];
-
-List<Icon> iconItems = <Icon>[
-  new Icon(Icons.keyboard), new Icon(Icons.print),
-  new Icon(Icons.router), new Icon(Icons.pages),
-  new Icon(Icons.zoom_out_map), new Icon(Icons.zoom_out),
-  new Icon(Icons.youtube_searched_for), new Icon(Icons.wifi_tethering),
-  new Icon(Icons.wifi_lock), new Icon(Icons.widgets),
-  new Icon(Icons.weekend), new Icon(Icons.web),
-  new Icon(Icons.accessible), new Icon(Icons.ac_unit),
-];
-
 List<fileEntity> fileLists = <fileEntity>[
   new fileEntity( '1' ,'word1','doc'),
   new fileEntity( '2' ,'word2','doc'),

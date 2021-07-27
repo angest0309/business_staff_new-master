@@ -74,6 +74,7 @@ class ReqModel {
         }
       } else {
         if (mapNoEmpty(params)) {
+          //FormData formData = FormData.fromMap(params);
           response = await _client.post(
             url,
             data: params,
@@ -93,7 +94,7 @@ class ReqModel {
         print('HTTP_REQUEST_URL::[$id]::$httpUrl');
         if (mapNoEmpty(params)) print('HTTP_REQUEST_BODY::[$id]::${json.encode(params)}');
         print('HTTP_RESPONSE_BODY::[$id]::${json.encode(response.data)}');
-
+        print('HTTP_RESPONSE_HEADER::[$id]::${response.headers}');
         BaseResponseEntity baseResponse = BaseResponseEntity.fromJson(response.data);
         if (baseResponse.isSuccess())
           return baseResponse.data;
@@ -124,7 +125,7 @@ class ReqModel {
     BaseOptions options = new BaseOptions();
     options.connectTimeout = connectTimeOut;
     options.receiveTimeout = receiveTimeOut;
-    options.headers = const {'Content-Type': 'application/json'};
+    options.headers ['Content-Type'] = 'application/json';
     options.baseUrl = API.reqUrl;
 
     _client = new Dio(options);

@@ -3,7 +3,9 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:registration_staff/config/const.dart';
 import 'package:registration_staff/data/summer_repo.dart';
+import 'package:registration_staff/dataobj/file_entity.dart';
 import 'package:registration_staff/dataobj/login_response_entity.dart';
 import 'package:registration_staff/dataobj/summer_entity.dart';
 import 'package:registration_staff/states/user_state_model.dart';
@@ -22,6 +24,7 @@ class DetailSummerPage extends StatefulWidget {
 }
 
 class _DetailSummerPageState extends State<DetailSummerPage> {
+
   @override
   Widget build(BuildContext context) {
     return Consumer<UserStateModel>(builder: (BuildContext context, UserStateModel value, Widget child)
@@ -90,7 +93,56 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
                               Divider(
                                 height: 5,
                               ),
-                              //unit(Icons.panorama_outlined, "相关图片", ""),
+                              Container(
+                                height: 20,
+                              ),
+                              Divider(
+                                height: 5,
+                                color: Colors.black,
+                              ),
+                              // Row(
+                              //   mainAxisSize: MainAxisSize.max,
+                              //   mainAxisAlignment: MainAxisAlignment.start,
+                              //   children: <Widget>[
+                              //     SizedBox(
+                              //       width: 5,
+                              //     ),
+                              //     Icon(
+                              //       Icons.format_list_numbered,
+                              //       color: Colors.grey,
+                              //     ),
+                              //     SizedBox(
+                              //       width: 30,
+                              //     ),
+                              //     Text(
+                              //       '出差总结附件',
+                              //       style: TEXT_STYLE_LABEL,
+                              //     ),
+                              //   ],
+                              // ),
+                              // //unit(Icons.panorama_outlined, "相关图片", ""),
+                              // SizedBox(height: 10,),
+                              // Container(
+                              //     child: Column(
+                              //       children: [
+                              //         Text(
+                              //           '序号          附件标题         附件类型          操作  ',
+                              //           style: TextStyle(fontSize: 18.0),
+                              //         ),
+                              //         Container(
+                              //           height: 120.0,
+                              //           child: new ListView.separated(
+                              //             itemBuilder:(context,item){
+                              //               //return buildListData(context, titleItems[item], iconItems[item]);
+                              //               return buildListData(context, fileLists[item]);
+                              //             },
+                              //             separatorBuilder: (BuildContext context,int index)=>new Divider(),
+                              //             itemCount: fileLists.length,
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     ),
+                              //   ),
                             ],
                           )
                         ],
@@ -132,6 +184,17 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
       );
     },);
   }
+
+  Widget buildListData(BuildContext context,fileEntity fileItem)
+  {
+    String number = fileItem.number;
+    String title = fileItem.title;
+    String type = fileItem.type;
+    return new ListTile(
+      title: new Text( number +'                  '+title +'                  '+type),
+    );
+  }
+
 
   Widget unit(IconData iconData, String title, String info){
     return Container(
@@ -177,7 +240,7 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
                 child: new Text('确定',style: TextStyle(color: Colors.green),),
                 onPressed: () {
                   //撤销总结
-
+                  _cancel(summerEntity,state,applicationId);
                   //Navigator.of(context).pop();
                 },
               ),
@@ -185,6 +248,35 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
           );
         });
   }
+
+  //撤销总结
+
+  _cancel(SummerEntity summerEntity, UserStateModel state, int applicationId) async {
+    await _cancelSummer(summerEntity, state, applicationId);
+  }
+
+  _cancelSummer(SummerEntity summerEntity, UserStateModel state, int applicationId) async{
+    // summerEntity.title = _titleController.text;
+    // summerEntity.text = _textController.text;
+    // summerEntity.applicationId = applicationId;
+
+    print("测试bug   !!!!  applicationId: " + summerEntity.applicationId.toString());
+    print("title" + summerEntity.title);
+    print("text" + summerEntity.text);
+
+
+
+      SummerRepo().delSummer(summerEntity.applicationId).then((value) {
+      BotToast.showText(text: '撤销总结成功！');
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MainPage()));
+    }).catchError((error) {
+      BotToast.showText(text: error.toString());
+    });
+  }
+
 
   //修改弹窗
   void showChangeAlertDialog(SummerEntity summerEntity, UserStateModel state, int applicationId) {
@@ -207,6 +299,7 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
               ),
               new FlatButton(
                 child: new Text('确定',style: TextStyle(color: Colors.green),),
+
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -222,3 +315,4 @@ class _DetailSummerPageState extends State<DetailSummerPage> {
         });
   }
 }
+

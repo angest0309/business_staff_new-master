@@ -7,6 +7,7 @@ class SummerRepo{
 
   var res;
 
+  //提交总结
   Future doSummer(SummerEntity summerEntity) async {
     try {
       print(res.toString());
@@ -18,9 +19,10 @@ class SummerRepo{
     }
   }
 
-  Future doGetOneSummer(id) async {
+  //获取总结
+  Future doGetOneSummer(int applicationId) async {
     try{
-      var res = await ReqModel.get(API.GET_ONESUMMER, {'applicationId': id});
+      var res = await ReqModel.get(API.GET_ONESUMMER, {'applicationId': applicationId});
       return Future.value(SummerEntity.fromJson(res));
     }catch(error){
       print(error);
@@ -28,9 +30,21 @@ class SummerRepo{
     }
   }
 
-  Future delSummer(id) async {
+  //删除出差总结
+  // Future delSummer(SummerEntity summerEntity) async {
+  //   try{
+  //     var res = await ReqModel.get(API.DEL_SUMMER, {'applicationId':applicationId, 'userId':userId});
+  //     return Future.value(res);
+  //   }catch(error){
+  //     print(error);
+  //     return Future.error(error);
+  //   }
+  // }
+
+  //删除出差总结
+  Future delSummer(int applicationId) async {
     try{
-      var res = await ReqModel.get(API.DEL_SUMMER, {'fileId': id});
+      var res = await ReqModel.get(API.DEL_SUMMER, {'applicationId': applicationId});
       return Future.value(res);
     }catch(error){
       print(error);
@@ -38,6 +52,29 @@ class SummerRepo{
     }
   }
 
+  //上传出差文件
+  Future UpSummerFile(id) async {
+    // try{
+    //   var res = await ReqModel.get(API.UPLOAD_SUMMER_FILE, {'fileId': id});
+    //   return Future.value(res);
+    // }catch(error){
+    //   print(error);
+    //   return Future.error(error);
+    // }
+  }
+
+  //删除出差文件
+  Future delSummerfile(id) async {
+    try{
+      var res = await ReqModel.get(API.DEL_SUMMER_FILE, {'fileId': id});
+      return Future.value(res);
+    }catch(error){
+      print(error);
+      return Future.error(error);
+    }
+  }
+
+  //获取总结列表
   Future doGetSummerList(int id) async {
     try{
       List<dynamic> res = await ReqModel.get(API.GET_SUMMERLIST, {'userId': id});
